@@ -75,8 +75,8 @@ class LastfmFetcher < Base
     images = last_client.artist.get_info(artist: artist, autocorrect: 1)['image']
     d "Images found: #{images.inspect}"
     PREFERRED_SIZES.each do |size|
-      image = images.find { |i| i['size'] == size }
-      next unless image
+      image = images.find { |i| i['size'] == size && !i['content'].nil? }
+      next if image.nil?
 
       d "Picking image: #{image.inspect}"
       download(artist, image['content'])
