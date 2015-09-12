@@ -1,4 +1,5 @@
 # Configuration file for Artist Fanart Finder
+#   Defaults are listed here. Change as you see fit.
 
 # Lastfm API Stuff
 #   Artist image is unauthenticated, so no secret is needed
@@ -14,7 +15,7 @@ PREFERRED_SIZES = %w(mega extralarge large medium small)
 
 # Trump all existing fanart
 #   This will force the script to overwrite existing fanart
-TRUMP_FANART = true
+TRUMP_FANART = false
 
 # Image Provider
 #   This setting selects which image provider we check
