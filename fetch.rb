@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
-# Get artist fanart
 
-DEBUG = true
+require 'lastfm'
+require_relative 'config.rb'
 
 class Base
   private
@@ -12,16 +12,22 @@ class Base
 end
 
 class Fetcher < Base
+  attr_reader :path, :artists
+
   def initialize(path)
     @path = path
-    @artists = Dir.new(path).to_a.reject! { |dir| %w(. ..).include?(dir) }
+    @artists = Dir.new(path).to_a.reject! { |dir| dir.start_with?('.') }
     d @artists.inspect
   end
 
   def fetch_all
-    @artists.each do |a|
-      next if art_exist?(a)
-      puts "Fetching art for #{a}"
+    fetcher = ArtFetcher.new(self)
+
+    @artists.each do |artist|
+      next if art_exist?(artist)
+
+      puts "Fetching art for #{artist}"
+      fetcher.fetch(artist)
     end
   end
 
@@ -36,7 +42,39 @@ class Fetcher < Base
 end
 
 class ArtFetcher < Base
+  def initialize(fetcher)
+    @fetcher = fetcher
+  end
 
+  def fetch(artist)
+    art_url = get_art_from_lastfm(artist)
+  end
+
+  private
+
+  def last_client
+    @last_client ||= Lastfm.new(LASTFM_API_KEY, LASTFM_API_SECRET)
+  end
+
+  def get_art_from_lastfm(artist)
+    images = last_client.artist.get_info(artist: artist, autocorrect: 1)['image']
+    d images
+    PREFERRED_SIZES.each do |size|
+      image = images.find { |i| i['size'] == size }
+      next unless image
+
+      d "Found image on lastfm #{image.inspect}"
+
+      download(artist, image['content'])
+      break
+    end
+  end
+
+  def download(artist, url)
+    suffix = url.split('.').last
+    `wget #{url} -o /dev/null -bO "#{@fetcher.path}/#{artist}/fanart.#{suffix}"`
+    puts "Downloaded image for #{artist}"
+  end
 end
 
 Fetcher.new(ARGV.first).fetch_all
