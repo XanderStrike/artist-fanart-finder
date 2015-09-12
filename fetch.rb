@@ -35,7 +35,7 @@ class Fetcher < Base
 
   def art_exist?(artist)
     %w(png jpg).each do |type|
-      return true if File.exist?("#{@path}/#{artist}/fanart.#{type}")
+      return true if !TRUMP_FANART && File.exist?("#{@path}/#{artist}/fanart.#{type}")
     end
     false
   end
@@ -47,7 +47,7 @@ class ArtFetcher < Base
   end
 
   def fetch(artist)
-    art_url = get_art_from_lastfm(artist)
+    get_art_from_lastfm(artist)
   end
 
   private
@@ -77,4 +77,6 @@ class ArtFetcher < Base
   end
 end
 
+puts "Downloading fanart for all artists in #{ARGV.first}"
 Fetcher.new(ARGV.first).fetch_all
+puts 'Done.'
