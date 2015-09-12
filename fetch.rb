@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+# Artist Fanart Finder
+#   Sept 2015
+#   Alexander Standke
 
 require 'lastfm'
 require_relative 'config.rb'
@@ -8,6 +11,12 @@ class Base
 
   def d(string)
     puts "D - #{string}" if DEBUG
+  end
+
+  def download(artist, url)
+    suffix = url.split('.').last
+    `wget #{url} -o /dev/null -bO "#{@fetcher.path}/#{artist}/fanart.#{suffix}"`
+    puts "Downloaded image for #{artist}"
   end
 end
 
@@ -21,19 +30,25 @@ class Fetcher < Base
   end
 
   def fetch_all
-    fetcher = ArtFetcher.new(self)
+    fetcher = "#{PROVIDER}Fetcher".constantize.new(self)
 
     @artists.each do |artist|
-      next if art_exist?(artist)
-
-      puts "Fetching art for #{artist}"
-      fetcher.fetch(artist)
+      next if should_download?(artist)
+      get_for_artist(fetcher, artist)
     end
   end
 
   private
 
-  def art_exist?(artist)
+  def get_for_artist(fetcher, artist)
+    puts "Fetching art for #{artist}"
+    fetcher.fetch(artist)
+  rescue Lastfm::ApiError => error
+    d error.inspect
+    puts "Could not find #{artist}... skipping"
+  end
+
+  def should_download?(artist)
     %w(png jpg).each do |type|
       return true if !TRUMP_FANART && File.exist?("#{@path}/#{artist}/fanart.#{type}")
     end
@@ -41,7 +56,7 @@ class Fetcher < Base
   end
 end
 
-class ArtFetcher < Base
+class LastfmFetcher < Base
   def initialize(fetcher)
     @fetcher = fetcher
   end
@@ -58,22 +73,15 @@ class ArtFetcher < Base
 
   def get_art_from_lastfm(artist)
     images = last_client.artist.get_info(artist: artist, autocorrect: 1)['image']
-    d images
+    d "Images found: #{images.inspect}"
     PREFERRED_SIZES.each do |size|
       image = images.find { |i| i['size'] == size }
       next unless image
 
-      d "Found image on lastfm #{image.inspect}"
-
+      d "Picking image: #{image.inspect}"
       download(artist, image['content'])
       break
     end
-  end
-
-  def download(artist, url)
-    suffix = url.split('.').last
-    `wget #{url} -o /dev/null -bO "#{@fetcher.path}/#{artist}/fanart.#{suffix}"`
-    puts "Downloaded image for #{artist}"
   end
 end
 
