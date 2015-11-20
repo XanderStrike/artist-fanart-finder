@@ -5,9 +5,10 @@
 
 require 'lastfm'
 require 'discogs'
+require 'google-search'
 require_relative 'config'
 
-%w(configuration base fetcher lastfm discogs).each do |file|
+%w(configuration base fetcher lastfm discogs google).each do |file|
   require_relative "lib/#{file}"
 end
 
