@@ -7,6 +7,10 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    discogs-wrapper (2.1.4)
+      hashie (~> 3.0)
+      oauth (~> 0.4.7)
+    hashie (3.4.3)
     httparty (0.13.5)
       json (~> 1.8)
       multi_xml (>= 0.5.2)
@@ -18,6 +22,7 @@ GEM
       xml-simple
     minitest (5.8.0)
     multi_xml (0.5.5)
+    oauth (0.4.7)
     thread_safe (0.3.5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
@@ -27,6 +32,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  discogs-wrapper
   lastfm
 
 BUNDLED WITH

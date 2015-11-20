@@ -1,6 +1,7 @@
 class Configuration
   attr_accessor :lastfm_api_key, :lastfm_api_secret, :debug,
-                :preferred_sizes, :trump_fanart, :provider
+                :preferred_sizes, :trump_fanart, :provider,
+                :discogs_user_token
 
   @config = nil
 
@@ -10,6 +11,7 @@ class Configuration
     @preferred_sizes = %w(mega extralarge large medium small)
     @trump_fanart = false
     @provider = 'Lastfm'
+    @discogs_user_token = nil
   end
 
   def self.configure

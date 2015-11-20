@@ -20,7 +20,7 @@ class LastfmFetcher < Base
 
     Configuration.preferred_sizes.each do |size|
       image = images.find { |i| i['size'] == size && !i['content'].nil? }
-      next if image.nil?
+      puts 'Nothing found' and next if image.nil?
 
       d "Picking image: #{image.inspect}"
       download(artist, image['content'])

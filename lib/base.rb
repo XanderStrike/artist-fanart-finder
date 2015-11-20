@@ -7,7 +7,7 @@ class Base
 
   def download(artist, url)
     suffix = url.split('.').last
-    `wget #{url} -o /dev/null -bO "#{@fetcher.path}/#{artist}/fanart.#{suffix}"`
+    `wget "#{url}" -o /dev/null -bO "#{@fetcher.path}/#{artist}/fanart.#{suffix}"`
     puts "Downloaded image for #{artist}"
   end
 end
